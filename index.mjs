@@ -9,7 +9,7 @@ uhul`
 
 const imagePath = 'C:/Users/gabri/Pictures/images.jpeg';
 
-const contacts = ['kelly','Guerris','Gabi Hist']
+const contactsChosen = ['kelly','Guerris','Gabi Hist']
 
 function getImage() { // get random image
     return fs.readFileSync(imagePath)
@@ -25,9 +25,9 @@ try {
     const font28 = await jimp.loadFont(path.resolve("fonts/font28.fnt"));
 
     const client = await wa.create(); // connect with whatsapp web
-    const contacts = await client.getAllContacts(); // get all contacts
+    const allContacts = await client.getAllContacts(); // get all contacts
     // aqui dá pra mandar pra todos, só trocar as menções de `amigos` por `contacts`
-    const amigos = contacts.filter(c => c.name ? contacts.includes(c.name) : false); // filter the contacts
+    const amigos = allContacts.filter(c => c.name ? contactsChosen.includes(c.name) : false); // filter the contacts
 
     for(let i = 0; i < amigos.length; i++) {// Create a custom message for each contact filtered above
         const img = await jimp.read(url); // read img from Url
