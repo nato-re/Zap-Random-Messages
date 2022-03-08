@@ -1,13 +1,23 @@
 import jimp from 'jimp';
 import wa from '@open-wa/wa-automate';
 import path from 'path';
-import axios from 'axios';
+import fs from 'fs';
+
+const text = `Seu texto vai aqui, 
+pode quebrar linhas
+uhul`
+
+const imagePath = 'C:/Users/gabri/Pictures/images.jpeg';
+
+const contacts = ['kelly','Guerris','Gabi Hist']
 
 function getImage() { // get random image
-    return `https://picsum.photos/400/400?random=${Math.random()}`;
+    return fs.readFileSync(imagePath)
 }
 
 (async function sendMessage() {
+try {
+    
 
     const url = getImage(); 
     // Read the fonts to write the image
@@ -16,10 +26,8 @@ function getImage() { // get random image
 
     const client = await wa.create(); // connect with whatsapp web
     const contacts = await client.getAllContacts(); // get all contacts
-    const amigos = contacts.filter(c => c.name ? c.name.includes('Matias') : false); // filter the contacts
-
-    const text = await axios.get('http://asdfast.beobit.net/api/?type=word&length=7'); // get a random text
-    const textTranslated = await axios.get(`https://api.mymemory.translated.net/get?q=${text.data.text}!&langpair=la|pt-br`); // translate the text (because it's in latin)
+    // aqui dá pra mandar pra todos, só trocar as menções de `amigos` por `contacts`
+    const amigos = contacts.filter(c => c.name ? contacts.includes(c.name) : false); // filter the contacts
 
     for(let i = 0; i < amigos.length; i++) {// Create a custom message for each contact filtered above
         const img = await jimp.read(url); // read img from Url
@@ -29,7 +37,10 @@ function getImage() { // get random image
         newImg = await newImg.print(font28, 100, 300, 'e bom final de semana'); // Add msg
         
         const base64 = await newImg.getBase64Async(jimp.MIME_JPEG); // convert the image to base64
-        await client.sendFile(amigos[i].id, base64, 'Bom dia.jpg', textTranslated.data.responseData.translatedText); // Send the image
+        await client.sendFile(amigos[i].id, base64, 'Bom dia.jpg', 'testando'); // Send the image
     }
+} catch (error) {
+    console.log(error);
+}
 })()
 
